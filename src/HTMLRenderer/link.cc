@@ -129,10 +129,12 @@ static string get_linkdest_detail_str(LinkDest * dest, Catalog * catalog, int & 
     return sout.str();
 }
 
-string HTMLRenderer::get_linkaction_str(LinkAction * action, string & detail)
+string HTMLRenderer::get_linkaction_str(LinkAction * action, string & detail, string & newtarget)
 {
     string dest_str;
     detail = "";
+    newtarget = "";
+    
     if(action)
     {
         auto kind = action->getKind();
@@ -154,6 +156,20 @@ string HTMLRenderer::get_linkaction_str(LinkAction * action, string & detail)
                         {
                             dest_str = (char*)str_fmt("#%s%x", CSS::PAGE_FRAME_CN, pageno);
                         }
+
+                        // NOTE(suyjuris): Determine where to send to link
+                        if (dest->getKind() == destXYZ) {
+                            double x = dest->getLeft();
+                            double y = dest->getTop();
+                            tm_transform(default_ctm, x, y);
+                            
+                            ostringstream sout;
+                            sout << "<div id=\"link" << link_id << "\" style=\"position:absolute;left:" << x << "px;bottom:" << y << "px;width:0px;height:0px\"></div>";
+                            newtarget = sout.str();
+                            dest_str = (char*)str_fmt("#link%d", link_id);
+                        }
+                        
+                        
                         delete dest;
                     }
                 }
@@ -189,8 +205,8 @@ string HTMLRenderer::get_linkaction_str(LinkAction * action, string & detail)
  */
 void HTMLRenderer::processLink(AnnotLink * al)
 {
-    string dest_detail_str;
-    string dest_str = get_linkaction_str(al->getAction(), dest_detail_str);
+    string dest_detail_str, dest_newdiv_str;
+    string dest_str = get_linkaction_str(al->getAction(), dest_detail_str, dest_newdiv_str);
 
     if(!dest_str.empty())
     {
@@ -303,6 +319,12 @@ void HTMLRenderer::processLink(AnnotLink * al)
     if(dest_str != "")
     {
         (*f_curpage) << "</a>";
+    }
+
+    // NOTE(suyjuris): Insert the new div
+    if (!dest_newdiv_str.empty()) {
+        (*f_curpage) << dest_newdiv_str;
+        ++link_id;
     }
 }
 

@@ -182,7 +182,10 @@ void HTMLRenderer::startPage(int pageNum, GfxState *state, XRef * xref)
 
     this->pageNum = pageNum;
 
-    html_text_page.set_page_size(state->getPageWidth(), state->getPageHeight());
+    // NOTE(suyjuris): Want the page size to be an integer.
+    double height = std::ceil(state->getPageHeight());
+    
+    html_text_page.set_page_size(state->getPageWidth(), height);
 
     reset_state();
 }

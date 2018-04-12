@@ -172,7 +172,7 @@ protected:
     void dump_css(void);
 
     // convert a LinkAction to a string that our Javascript code can understand
-    std::string get_linkaction_str(LinkAction *, std::string & detail);
+    std::string get_linkaction_str(LinkAction *, std::string & detail, std::string & newdiv);
 
     ////////////////////////////////////////////////////
     /*
@@ -341,6 +341,9 @@ protected:
 
     CoveredTextDetector covered_text_detector;
     DrawingTracer tracer;
+
+    // NOTE(suyjuris): Hacky way to get unique values for the links
+    int link_id = 0;
 };
 
 } //namespace pdf2htmlEX

@@ -32,8 +32,8 @@ void HTMLRenderer::process_outline_items(GooList * items)
     {
         OutlineItem * item = (OutlineItem*)(items->get(i));
 
-        string detail;
-        string dest = get_linkaction_str(item->getAction(), detail);
+        string detail, newdiv;
+        string dest = get_linkaction_str(item->getAction(), detail, newdiv);
 
         // we don't care dest is empty or not.
         f_outline.fs << "<li>" << "<a class=\"" << CSS::LINK_CN << "\" href=\"";
